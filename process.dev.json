@@ -1,0 +1,15 @@
+{
+  "apps": [
+    {
+      "name": "server",
+      "script": "./index.js",
+      "watch": true
+    },
+    {
+      "name": "webpack",
+      "script": "webpack",
+      "args": ["--watch"],
+      "interpreter": "none"
+    }
+  ]
+}
