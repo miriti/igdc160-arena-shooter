@@ -11,10 +11,11 @@ module.exports = class Player extends GameEntity {
     this.x = -(500 / 2) + Math.random() * 500;
     this.y = -(500 / 2) + Math.random() * 500;
 
-    this.velocity = { x: 0, y: 0 };
+    this.fire = false;
   }
 
   update(delta) {
+    super.update(delta);
     this.x += this.velocity.x * 100.0 * delta;
     this.y += this.velocity.y * 100.0 * delta;
   }

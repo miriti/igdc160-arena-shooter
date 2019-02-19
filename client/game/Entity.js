@@ -4,11 +4,9 @@ export default class Entity extends PIXI.Container {
   constructor(data) {
     super();
 
-    let circle = new PIXI.Graphics();
-    circle.beginFill(0xffffff);
-    circle.drawCircle(0, 0, 20);
-    circle.endFill();
-    this.addChild(circle);
+
+    this.velocity = new PIXI.Point();
+    this.pointing = new PIXI.Point();
 
     this.data = data;
   }
@@ -18,5 +16,7 @@ export default class Entity extends PIXI.Container {
   set data(newData) {
     this.x = newData.x;
     this.y = newData.y;
+    this.velocity.set(newData["velocity"]["x"], newData["velocity"]["y"]);
+    this.pointing.set(newData["pointing"]["x"], newData["pointing"]["y"]);
   }
 }

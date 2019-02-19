@@ -13,10 +13,6 @@ import "bootstrap/dist/css/bootstrap.css";
 
 let io = socket();
 
-io.on("connect", () => {
-  console.log("connected");
-});
-
 let app = new PIXI.Application();
 
 app.renderer.autoResize = true;
@@ -25,6 +21,21 @@ app.renderer.view.style.display = "block";
 app.renderer.autoResize = true;
 
 let game = new Game(io);
+
+app.view.addEventListener("mousemove", event => {
+  game.mouseMove(
+    event.clientX - window.innerWidth / 2,
+    event.clientY - window.innerHeight / 2
+  );
+});
+
+app.view.addEventListener("mousedown", event => {
+  game.mouseDown();
+});
+
+app.view.addEventListener("mouseup", event => {
+  game.mouseUp();
+});
 
 let gameContainer = new PIXI.Container();
 gameContainer.addChild(game);

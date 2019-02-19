@@ -1,6 +1,7 @@
 import * as PIXI from "pixi.js";
 import Entity from "./Entity";
 import Player from "./Player";
+import Rocket from "./Rocket";
 export default class Game extends PIXI.Sprite {
   constructor(io) {
     super();
@@ -41,7 +42,7 @@ export default class Game extends PIXI.Sprite {
         if (this.entities.has(player["ID"])) {
           this.player = this.entities.get(player["ID"]);
         } else {
-          this.player = this.factory(player);
+          this.player = this.entityFactory(player);
           this.entities.set(player["ID"], this.player);
           this.addChild(this.player);
         }
@@ -64,7 +65,7 @@ export default class Game extends PIXI.Sprite {
 
   addEntity(data) {
     if (!this.entities.has(data["ID"])) {
-      let newEntity = this.factory(data);
+      let newEntity = this.entityFactory(data);
       this.entities.set(data["ID"], newEntity);
       this.addChild(newEntity);
     }
@@ -84,10 +85,12 @@ export default class Game extends PIXI.Sprite {
     }
   }
 
-  factory(data) {
+  entityFactory(data) {
     switch (data["type"]) {
       case "Player":
         return new Player(data);
+      case "Rocket":
+        return new Rocket(data);
       default:
         return new Entity(data);
     }
@@ -156,5 +159,31 @@ export default class Game extends PIXI.Sprite {
       }
     }
     this.keys.delete(key);
+  }
+
+  mouseMove(dx, dy) {
+    if (this.player) {
+      let l = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
+      let pointing = { x: dx / l, y: dy / l };
+
+      if (
+        this.player.pointing.x != pointing.x ||
+        this.player.pointing.y != pointing.y
+      ) {
+        this.io.emit("pointing", pointing);
+      }
+    }
+  }
+
+  mouseDown() {
+    if (this.player) {
+      this.io.emit("fire-on");
+    }
+  }
+
+  mouseUp() {
+    if (this.player) {
+      this.io.emit("fire-off");
+    }
   }
 }

@@ -18,6 +18,10 @@ module.exports = class Game {
   update(delta) {
     for (let entity of this.entities) {
       entity.update(delta);
+
+      if (entity.ttl != null && entity.ttl <= 0) {
+        this.removeEntity(entity);
+      }
     }
 
     this.io.emit("situation", {
@@ -37,5 +41,15 @@ module.exports = class Game {
   removeEntity(entity) {
     this.entities.splice(this.entities.indexOf(entity), 1);
     this.io.emit("remove-entity", entity);
+  }
+
+  hasPlayerName(name) {
+    for (let [socket, client] of this.clients.clients) {
+      if (client.player && client.player.name == name) {
+        return true;
+      }
+    }
+
+    return false;
   }
 };

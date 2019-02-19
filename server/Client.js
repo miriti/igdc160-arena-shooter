@@ -1,4 +1,5 @@
 const Player = require("./Player");
+const Rocket = require("./Rocket");
 
 module.exports = class Client {
   constructor(game, io, socket) {
@@ -16,6 +17,36 @@ module.exports = class Client {
         this.io.emit("update-entity", this.player);
       }
     });
+
+    this.socket.on("pointing", value => {
+      if (this.player) {
+        this.player.pointing.x = value.x;
+        this.player.pointing.y = value.y;
+
+        this.io.emit("update-entity", this.player);
+      }
+    });
+
+    this.socket.on("fire-on", () => {
+      if (this.player) {
+        this.player.fire = true;
+        this.io.emit("update-entity", this.player);
+
+        let newRocket = new Rocket();
+        newRocket.x = this.player.x;
+        newRocket.y = this.player.y;
+        newRocket.velocity.x = this.player.pointing.x;
+        newRocket.velocity.y = this.player.pointing.y;
+        this.game.addEntity(newRocket);
+      }
+    });
+
+    this.socket.on("fire-off", () => {
+      if (this.player) {
+        this.player.fire = false;
+        this.io.emit("update-entity", this.player);
+      }
+    });
   }
 
   update(delta) {
@@ -25,6 +56,13 @@ module.exports = class Client {
   }
 
   join(name) {
+    let num = 2;
+    let originalName = name;
+
+    while (this.game.hasPlayerName(name)) {
+      name = originalName + " (" + num++ + ")";
+    }
+
     this.player = new Player(name);
     this.socket.emit("your-player", this.player);
     this.game.addEntity(this.player);
