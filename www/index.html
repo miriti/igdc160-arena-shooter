@@ -11,6 +11,15 @@
         padding: 0;
         cursor: crosshair;
       }
+
+      #chat {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+        padding: 10px;
+      }
     </style>
   </head>
   <body>
@@ -50,6 +59,10 @@
           </div>
         </div>
       </div>
+    </div>
+
+    <div id="chat">
+      <input type="text" class="form-control" placeholder="Чат" />
     </div>
 
     <script src="./bundle.js"></script>

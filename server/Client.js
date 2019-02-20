@@ -32,7 +32,7 @@ module.exports = class Client {
         this.player.fire = true;
         this.io.emit("update-entity", this.player);
 
-        let newRocket = new Rocket();
+        let newRocket = new Rocket(this.player.ID);
         newRocket.x = this.player.x;
         newRocket.y = this.player.y;
         newRocket.velocity.x = this.player.pointing.x;
@@ -45,6 +45,12 @@ module.exports = class Client {
       if (this.player) {
         this.player.fire = false;
         this.io.emit("update-entity", this.player);
+      }
+    });
+
+    this.socket.on("say", message => {
+      if (message.trim() != "") {
+        game.chat(this.player ? this.player.name : "Anon", message);
       }
     });
   }
@@ -66,6 +72,7 @@ module.exports = class Client {
     this.player = new Player(name);
     this.socket.emit("your-player", this.player);
     this.game.addEntity(this.player);
+    this.game.chat(null, name + " присоединился");
     console.log("%s joined", name);
   }
 
@@ -73,6 +80,7 @@ module.exports = class Client {
     if (this.player) {
       this.game.removeEntity(this.player);
       console.log("%s disconnected", this.player.name);
+      this.game.chat(null, this.player.name + " покинул нас");
     }
   }
 };

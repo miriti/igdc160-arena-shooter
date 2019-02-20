@@ -2,6 +2,7 @@ import * as PIXI from "pixi.js";
 
 import socket from "socket.io-client";
 import Game from "./game/Game";
+import Chat from "./game/ui/Chat";
 
 import $ from "jquery";
 
@@ -40,17 +41,24 @@ app.view.addEventListener("mouseup", event => {
 let gameContainer = new PIXI.Container();
 gameContainer.addChild(game);
 
+app.stage.addChild(gameContainer);
+
+let chatWindow = new Chat(io);
+app.stage.addChild(chatWindow);
+
 let resize = () => {
   app.renderer.resize(window.innerWidth, window.innerHeight);
   gameContainer.x = window.innerWidth / 2;
   gameContainer.y = window.innerHeight / 2;
+  chatWindow.x = 10;
+  chatWindow.y = window.innerHeight - 60;
 };
+
+PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 
 window.addEventListener("resize", resize);
 
 resize();
-
-app.stage.addChild(gameContainer);
 
 let lastTime = Date.now();
 
@@ -96,5 +104,18 @@ $("#joinButton").click(event => {
 $("#playerName").keydown(event => {
   if (event.keyCode == 13) {
     join();
+  }
+});
+
+$("#chat input").keydown(event => {
+  if (event.keyCode == 13) {
+    let message = $("#chat input")
+      .val()
+      .trim();
+    $("#chat input").val("");
+
+    if (message != "") {
+      io.emit("say", message);
+    }
   }
 });

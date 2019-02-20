@@ -6,18 +6,21 @@ module.exports = class Game {
     this.io = io;
     this.clients = new Clients(this, io);
     this.entities = [];
+    this.chatHistory = [];
 
     io.on("connection", socket => {
       socket.emit("situation", {
         time: this.time,
         entities: this.entities
       });
+
+      socket.emit("chat-history", this.chatHistory.slice(-20));
     });
   }
 
   update(delta) {
     for (let entity of this.entities) {
-      entity.update(delta);
+      entity.update(delta, this);
 
       if (entity.ttl != null && entity.ttl <= 0) {
         this.removeEntity(entity);
@@ -51,5 +54,11 @@ module.exports = class Game {
     }
 
     return false;
+  }
+
+  chat(name, message) {
+    let chatItem = { time: new Date(), name, message };
+    this.chatHistory.push(chatItem);
+    this.io.emit("chat", chatItem);
   }
 };

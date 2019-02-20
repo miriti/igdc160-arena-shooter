@@ -6,7 +6,7 @@ export default class Rocket extends Entity {
     super(data);
 
     let rocket = new PIXI.Graphics();
-    rocket.beginFill(0xffff00);
+    rocket.beginFill(0xfdfffc);
     rocket.drawRoundedRect(-10, -4, 20, 8, 4);
     rocket.endFill();
 

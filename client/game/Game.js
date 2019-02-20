@@ -7,7 +7,7 @@ export default class Game extends PIXI.Sprite {
     super();
 
     let arena = new PIXI.Graphics();
-    arena.beginFill(0xcc0000);
+    arena.beginFill(0xf06543);
     arena.drawCircle(0, 0, 500);
     arena.endFill();
     this.addChild(arena);
@@ -37,7 +37,6 @@ export default class Game extends PIXI.Sprite {
     });
 
     io.on("your-player", player => {
-      console.log("your-player", player);
       if (!this.player) {
         if (this.entities.has(player["ID"])) {
           this.player = this.entities.get(player["ID"]);
@@ -51,6 +50,10 @@ export default class Game extends PIXI.Sprite {
 
     io.on("update-entity", entity => {
       this.updateEntity(entity);
+      if (this.player) {
+        this.x = -this.player.x;
+        this.y = -this.player.y;
+      }
     });
   }
 
