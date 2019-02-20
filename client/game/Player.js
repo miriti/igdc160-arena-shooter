@@ -38,8 +38,17 @@ export default class Player extends Entity {
 
   set data(newData) {
     super.data = newData;
+
+    this.health = newData["health"];
+
     if (this.healthBar) {
       this.healthBar.value = newData["health"];
+    }
+
+    if (this.health <= 0) {
+      this.alpha = 0.3;
+    } else {
+      this.alpha = 1;
     }
   }
 

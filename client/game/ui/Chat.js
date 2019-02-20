@@ -37,8 +37,6 @@ export default class Chat extends PIXI.Container {
     super();
 
     this.chatContainer = new PIXI.Container();
-    console.log(PIXI.filters);
-    //this.chatContainer.filters = [new PIXI.filters.DropShadowFilter()];
     this.addChild(this.chatContainer);
 
     this.items = [];
@@ -48,7 +46,6 @@ export default class Chat extends PIXI.Container {
     });
 
     io.on("chat-history", items => {
-      console.log("chat hisotry", items);
       items.forEach(item => {
         this.add(item);
       });

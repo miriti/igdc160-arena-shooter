@@ -1,0 +1,8 @@
+{
+  "apps": [
+    {
+      "name": "game",
+      "script": "index.js"
+    }
+  ]
+}

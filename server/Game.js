@@ -19,6 +19,7 @@ module.exports = class Game {
   }
 
   update(delta) {
+    this.clients.update(delta);
     for (let entity of this.entities) {
       entity.update(delta, this);
 
@@ -32,7 +33,6 @@ module.exports = class Game {
       entities: this.entities
     });
 
-    this.clients.update(delta);
     this.time += delta;
   }
 

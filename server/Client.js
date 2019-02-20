@@ -7,10 +7,12 @@ module.exports = class Client {
     this.io = io;
     this.socket = socket;
 
+    this.respawnTimer = 5;
+
     this.socket.on("join", this.join.bind(this));
     this.socket.on("disconnect", this.disconnect.bind(this));
     this.socket.on("velocity", value => {
-      if (this.player) {
+      if (this.player && this.player.alive) {
         if (value.hasOwnProperty("x")) this.player.velocity.x = value.x;
         if (value.hasOwnProperty("y")) this.player.velocity.y = value.y;
 
@@ -19,7 +21,7 @@ module.exports = class Client {
     });
 
     this.socket.on("pointing", value => {
-      if (this.player) {
+      if (this.player && this.player.alive) {
         this.player.pointing.x = value.x;
         this.player.pointing.y = value.y;
 
@@ -28,13 +30,13 @@ module.exports = class Client {
     });
 
     this.socket.on("fire-on", () => {
-      if (this.player) {
+      if (this.player && this.player.alive) {
         this.player.fire = true;
         this.io.emit("update-entity", this.player);
 
         let newRocket = new Rocket(this.player.ID);
-        newRocket.x = this.player.x;
-        newRocket.y = this.player.y;
+        newRocket.x = this.player.x + this.player.pointing.x * 20;
+        newRocket.y = this.player.y + this.player.pointing.y * 20;
         newRocket.velocity.x = this.player.pointing.x;
         newRocket.velocity.y = this.player.pointing.y;
         this.game.addEntity(newRocket);
@@ -42,7 +44,7 @@ module.exports = class Client {
     });
 
     this.socket.on("fire-off", () => {
-      if (this.player) {
+      if (this.player && this.player.alive) {
         this.player.fire = false;
         this.io.emit("update-entity", this.player);
       }
@@ -56,8 +58,14 @@ module.exports = class Client {
   }
 
   update(delta) {
-    if (this.player) {
-      this.player.update(delta);
+    if (this.player && !this.player.alive && this.respawnTimer > 0) {
+      this.respawnTimer -= delta;
+
+      if (this.respawnTimer <= 0) {
+        this.player.respawn();
+        this.respawnTimer = 5;
+        this.io.emit("update-entity", this.player);
+      }
     }
   }
 

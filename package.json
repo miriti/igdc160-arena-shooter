@@ -4,6 +4,9 @@
   "description": "Arena Shooter",
   "main": "index.js",
   "scripts": {
+    "build": "webpack",
+    "start": "pm2 start process.json && pm2 logs",
+    "stop": "pm2 kill",
     "dev": "pm2 start process.dev.json",
     "stop-dev": "pm2 kill"
   },
