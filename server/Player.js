@@ -1,21 +1,18 @@
 const GameEntity = require("./GameEntity");
+const RocketLauncher = require("./weapons/RocketLauncher");
 
 module.exports = class Player extends GameEntity {
   constructor(name) {
     super();
 
     this.type = "Player";
-
     this.name = name;
-
     this.radius = 20;
-
     this.maxHealth = 100;
     this.health = 100;
+    this.weapon = new RocketLauncher();
 
     this.respawn();
-
-    this.fire = false;
   }
 
   respawn() {
@@ -33,6 +30,8 @@ module.exports = class Player extends GameEntity {
     super.update(delta, game);
 
     if (this.alive) {
+      this.weapon.update(delta);
+
       let nextPos = {
         x: this.x + this.velocity.x * 400.0 * delta,
         y: this.y + this.velocity.y * 400.0 * delta
@@ -40,9 +39,9 @@ module.exports = class Player extends GameEntity {
 
       let lg = Math.sqrt(Math.pow(nextPos.x, 2) + Math.pow(nextPos.y, 2));
 
-      if (lg >= 500 - this.radius) {
-        nextPos.x = (nextPos.x / lg) * (500 - this.radius);
-        nextPos.y = (nextPos.y / lg) * (500 - this.radius);
+      if (lg >= game.arena.radius - this.radius) {
+        nextPos.x = (nextPos.x / lg) * (game.arena.radius - this.radius);
+        nextPos.y = (nextPos.y / lg) * (game.arena.radius - this.radius);
       }
 
       this.x = nextPos.x;

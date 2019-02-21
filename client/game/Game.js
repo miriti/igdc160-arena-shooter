@@ -6,16 +6,24 @@ export default class Game extends PIXI.Sprite {
   constructor(io) {
     super();
 
-    let arena = new PIXI.Graphics();
-    arena.beginFill(0xf06543);
-    arena.drawCircle(0, 0, 500);
-    arena.endFill();
-    this.addChild(arena);
+    this.arenaLayer = new PIXI.Container();
+    this.actionLayer = new PIXI.Container();
+
+    this.addChild(this.arenaLayer);
+    this.addChild(this.actionLayer);
 
     this.io = io;
     this.entities = new Map();
 
     this.keys = new Map();
+
+    io.on("arena", arena => {
+      let arenaFloor = new PIXI.Graphics();
+      arenaFloor.beginFill(0xf06543);
+      arenaFloor.drawCircle(0, 0, arena["radius"]);
+      arenaFloor.endFill();
+      this.arenaLayer.addChild(arenaFloor);
+    });
 
     io.on("situation", situation => {
       for (let data of situation.entities) {

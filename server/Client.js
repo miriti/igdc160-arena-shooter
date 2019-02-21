@@ -1,5 +1,5 @@
 const Player = require("./Player");
-const Rocket = require("./Rocket");
+const Rocket = require("./weapons/projectiles/Rocket");
 
 module.exports = class Client {
   constructor(game, io, socket) {
@@ -30,23 +30,14 @@ module.exports = class Client {
     });
 
     this.socket.on("fire-on", () => {
-      if (this.player && this.player.alive) {
-        this.player.fire = true;
-        this.io.emit("update-entity", this.player);
-
-        let newRocket = new Rocket(this.player.ID);
-        newRocket.x = this.player.x + this.player.pointing.x * 20;
-        newRocket.y = this.player.y + this.player.pointing.y * 20;
-        newRocket.velocity.x = this.player.pointing.x;
-        newRocket.velocity.y = this.player.pointing.y;
-        this.game.addEntity(newRocket);
+      if (this.player && this.player.alive && this.player.weapon != null) {
+        this.player.weapon.pull();
       }
     });
 
     this.socket.on("fire-off", () => {
-      if (this.player && this.player.alive) {
-        this.player.fire = false;
-        this.io.emit("update-entity", this.player);
+      if (this.player && this.player.alive && this.player.weapon != null) {
+        this.player.weapon.release();
       }
     });
 
@@ -58,13 +49,32 @@ module.exports = class Client {
   }
 
   update(delta) {
-    if (this.player && !this.player.alive && this.respawnTimer > 0) {
-      this.respawnTimer -= delta;
+    if (this.player) {
+      if (this.player.alive) {
+        if (this.player.weapon && this.player.weapon.fire) {
+          let projectiles = this.player.weapon.projectiles();
 
-      if (this.respawnTimer <= 0) {
-        this.player.respawn();
-        this.respawnTimer = 5;
-        this.io.emit("update-entity", this.player);
+          if (projectiles != null) {
+            projectiles.forEach(projectile => {
+              projectile.shooter_id = this.player.ID;
+              projectile.x =
+                this.player.x + this.player.pointing.x * this.player.radius;
+              projectile.y =
+                this.player.y + this.player.pointing.y * this.player.radius;
+              projectile.velocity.x = this.player.pointing.x;
+              projectile.velocity.y = this.player.pointing.y;
+              this.game.addEntity(projectile);
+            });
+          }
+        }
+      } else if (this.respawnTimer > 0) {
+        this.respawnTimer -= delta;
+
+        if (this.respawnTimer <= 0) {
+          this.player.respawn();
+          this.respawnTimer = 5;
+          this.io.emit("update-entity", this.player);
+        }
       }
     }
   }
@@ -77,18 +87,20 @@ module.exports = class Client {
       name = originalName + " (" + num++ + ")";
     }
 
+    this.io.emit("joined", name);
+
     this.player = new Player(name);
     this.socket.emit("your-player", this.player);
     this.game.addEntity(this.player);
-    this.game.chat(null, name + " присоединился");
     console.log("%s joined", name);
   }
 
   disconnect() {
     if (this.player) {
+      this.io.emit("left", this.player.name);
       this.game.removeEntity(this.player);
+
       console.log("%s disconnected", this.player.name);
-      this.game.chat(null, this.player.name + " покинул нас");
     }
   }
 };

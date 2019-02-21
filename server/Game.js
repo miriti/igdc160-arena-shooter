@@ -1,4 +1,5 @@
 const Clients = require("./Clients");
+const Arena = require("./Arena");
 
 module.exports = class Game {
   constructor(io) {
@@ -7,8 +8,10 @@ module.exports = class Game {
     this.clients = new Clients(this, io);
     this.entities = [];
     this.chatHistory = [];
+    this.arena = new Arena();
 
     io.on("connection", socket => {
+      socket.emit("arena", this.arena);
       socket.emit("situation", {
         time: this.time,
         entities: this.entities

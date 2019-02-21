@@ -42,7 +42,17 @@ export default class Chat extends PIXI.Container {
     this.items = [];
 
     io.on("chat", chat => {
+      new Audio("/audio/new-message.ogg").play();
       this.add(chat);
+    });
+
+    io.on("joined", name => {
+      new Audio("/audio/new-player.ogg").play();
+      this.add({ name: null, message: name + " присоединился" });
+    });
+
+    io.on("left", name => {
+      this.add({ name: null, message: name + " покинул нас" });
     });
 
     io.on("chat-history", items => {

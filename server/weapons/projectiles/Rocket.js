@@ -1,9 +1,8 @@
-const GameEntity = require("./GameEntity");
+const Projectile = require("./Projectile");
 
-module.exports = class Rocket extends GameEntity {
-  constructor(shooter_id) {
+module.exports = class Rocket extends Projectile {
+  constructor() {
     super();
-    this.shooter_id = shooter_id;
     this.type = "Rocket";
     this.ttl = 3;
     this.radius = 10;
@@ -19,9 +18,9 @@ module.exports = class Rocket extends GameEntity {
 
     let lg = Math.sqrt(Math.pow(nextPos.x, 2) + Math.pow(nextPos.y, 2));
 
-    if (lg >= 500 - this.radius) {
-      nextPos.x = (nextPos.x / lg) * (500 - this.radius);
-      nextPos.y = (nextPos.y / lg) * (500 - this.radius);
+    if (lg >= game.arena.radius - this.radius) {
+      nextPos.x = (nextPos.x / lg) * (game.arena.radius - this.radius);
+      nextPos.y = (nextPos.y / lg) * (game.arena.radius - this.radius);
       this.ttl = 0;
     }
 

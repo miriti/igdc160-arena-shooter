@@ -107,7 +107,10 @@ $("#playerName").keydown(event => {
   }
 });
 
-$("#chat input").keydown(event => {
+let chatInput = $("#chat input");
+chatInput.keydown(event => {
+  event.stopImmediatePropagation();
+
   if (event.keyCode == 13) {
     let message = $("#chat input")
       .val()
@@ -117,5 +120,9 @@ $("#chat input").keydown(event => {
     if (message != "") {
       io.emit("say", message);
     }
+  }
+
+  if (event.keyCode == 27) {
+    chatInput.blur();
   }
 });
