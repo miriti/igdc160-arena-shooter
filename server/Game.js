@@ -1,5 +1,6 @@
 const Clients = require("./Clients");
 const Arena = require("./Arena");
+const Heal = require("./Heal");
 
 module.exports = class Game {
   constructor(io) {
@@ -10,6 +11,7 @@ module.exports = class Game {
     this.chatHistory = [];
     this.arena = new Arena();
 
+    this.spawnHeal();
     io.on("connection", socket => {
       socket.emit("arena", this.arena);
       socket.emit("situation", {
@@ -37,6 +39,13 @@ module.exports = class Game {
     });
 
     this.time += delta;
+  }
+
+  spawnHeal() {
+    let heal = new Heal();
+    heal.x = this.arena.radius * Math.random();
+    heal.y = this.arena.radius * Math.random();
+    this.addEntity(heal);
   }
 
   addEntity(entity) {

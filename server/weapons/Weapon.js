@@ -6,6 +6,10 @@ module.exports = class Weapon {
     this.recoil = 0;
     this.projPerShot = 1;
     this.fire = false;
+    this.spreadMin = 3;
+    this.spreadMax = 15;
+    this.spreadTime = 3;
+    this.spreadCurrent = this.spreadMin;
   }
 
   pull() {
@@ -22,7 +26,14 @@ module.exports = class Weapon {
     }
   }
 
-  projectileFactory() {}
+  projectileFactory() {
+    return null;
+  }
+
+  reset() {
+    this.fire = false;
+    this.recoil = 0;
+  }
 
   projectiles() {
     if (this.fire && this.recoil <= 0) {

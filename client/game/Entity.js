@@ -4,7 +4,6 @@ export default class Entity extends PIXI.Container {
   constructor(data) {
     super();
 
-
     this.velocity = new PIXI.Point();
     this.pointing = new PIXI.Point();
 
@@ -18,5 +17,6 @@ export default class Entity extends PIXI.Container {
     this.y = newData.y;
     this.velocity.set(newData["velocity"]["x"], newData["velocity"]["y"]);
     this.pointing.set(newData["pointing"]["x"], newData["pointing"]["y"]);
+    this.radius = newData["radius"];
   }
 }

@@ -58,11 +58,15 @@ module.exports = class Client {
             projectiles.forEach(projectile => {
               projectile.shooter_id = this.player.ID;
               projectile.x =
-                this.player.x + this.player.pointing.x * this.player.radius;
+                this.player.x +
+                this.player.pointing.x * this.player.radius +
+                projectile.radius;
               projectile.y =
-                this.player.y + this.player.pointing.y * this.player.radius;
-              projectile.velocity.x = this.player.pointing.x;
-              projectile.velocity.y = this.player.pointing.y;
+                this.player.y +
+                this.player.pointing.y * this.player.radius +
+                projectile.radius;
+              projectile.direction.x = this.player.pointing.x;
+              projectile.direction.y = this.player.pointing.y;
               this.game.addEntity(projectile);
             });
           }

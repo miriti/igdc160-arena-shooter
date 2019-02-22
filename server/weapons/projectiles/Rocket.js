@@ -6,6 +6,7 @@ module.exports = class Rocket extends Projectile {
     this.type = "Rocket";
     this.ttl = 3;
     this.radius = 10;
+    this.hitPower = 25;
   }
 
   update(delta, game) {
@@ -28,7 +29,7 @@ module.exports = class Rocket extends Projectile {
     this.y = nextPos.y;
 
     for (let entity of game.entities) {
-      if (entity != this && entity.ID != this.shooter_id) {
+      if (entity != this && entity.shootable && entity.ID != this.shooter_id) {
         let dist = Math.sqrt(
           Math.pow(entity.x - this.x, 2) + Math.pow(entity.y - this.y, 2)
         );
@@ -37,7 +38,7 @@ module.exports = class Rocket extends Projectile {
           this.ttl = 0;
 
           if (entity["hit"]) {
-            entity["hit"](25);
+            entity["hit"](this.hitPower);
           }
         }
       }

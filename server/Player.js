@@ -1,6 +1,6 @@
 const GameEntity = require("./GameEntity");
 const RocketLauncher = require("./weapons/RocketLauncher");
-
+const MachineGun = require("./weapons/MachineGun");
 module.exports = class Player extends GameEntity {
   constructor(name) {
     super();
@@ -10,7 +10,8 @@ module.exports = class Player extends GameEntity {
     this.radius = 20;
     this.maxHealth = 100;
     this.health = 100;
-    this.weapon = new RocketLauncher();
+    // this.weapon = new RocketLauncher();
+    this.weapon = new MachineGun();
 
     this.respawn();
   }
@@ -18,8 +19,13 @@ module.exports = class Player extends GameEntity {
   respawn() {
     this.health = this.maxHealth;
 
+    this.velocity.x = 0;
+    this.velocity.y = 0;
+
     this.x = -(500 / 2) + Math.random() * 500;
     this.y = -(500 / 2) + Math.random() * 500;
+
+    this.weapon.reset();
   }
 
   get alive() {
@@ -46,6 +52,15 @@ module.exports = class Player extends GameEntity {
 
       this.x = nextPos.x;
       this.y = nextPos.y;
+
+      let collisions = this.getCollisions(game);
+
+      for (let entity of collisions) {
+        if (this.health < this.maxHealth && entity["type"] == "Heal") {
+          this.health = this.maxHealth;
+          entity.remove();
+        }
+      }
     }
   }
 

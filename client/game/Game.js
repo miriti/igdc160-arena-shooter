@@ -2,12 +2,15 @@ import * as PIXI from "pixi.js";
 import Entity from "./Entity";
 import Player from "./Player";
 import Rocket from "./Rocket";
-export default class Game extends PIXI.Sprite {
+import Heal from "./Heal";
+import Bullet from "./projectiles/Bullet";
+import UpdatableObject from "./UpdatableObject";
+export default class Game extends UpdatableObject {
   constructor(io) {
     super();
 
-    this.arenaLayer = new PIXI.Container();
-    this.actionLayer = new PIXI.Container();
+    this.arenaLayer = new UpdatableObject();
+    this.actionLayer = new UpdatableObject();
 
     this.addChild(this.arenaLayer);
     this.addChild(this.actionLayer);
@@ -78,19 +81,20 @@ export default class Game extends PIXI.Sprite {
     if (!this.entities.has(data["ID"])) {
       let newEntity = this.entityFactory(data);
       this.entities.set(data["ID"], newEntity);
-      this.addChild(newEntity);
+      this.actionLayer.addChild(newEntity);
     }
   }
 
   removeEntity(data) {
     if (this.entities.has(data["ID"])) {
       let entity = this.entities.get(data["ID"]);
-      this.removeChild(entity);
+      this.actionLayer.removeChild(entity);
       this.entities.delete(data["ID"]);
     }
   }
 
   update(delta) {
+    super.update(delta);
     for (let [ID, entity] of this.entities) {
       entity.update(delta);
     }
@@ -102,6 +106,10 @@ export default class Game extends PIXI.Sprite {
         return new Player(data);
       case "Rocket":
         return new Rocket(data);
+      case "Heal":
+        return new Heal(data);
+      case "Bullet":
+        return new Bullet(data);
       default:
         return new Entity(data);
     }
