@@ -5,43 +5,20 @@ module.exports = class Rocket extends Projectile {
     super();
     this.type = "Rocket";
     this.ttl = 3;
-    this.radius = 10;
-    this.hitPower = 25;
+    this.radius = 5;
+    this.hitPower = 75;
+    this.shootable = true;
+    this.speed = 0;
+
+    this._time = 0;
   }
 
   update(delta, game) {
     super.update(delta, game);
 
-    let nextPos = {
-      x: this.x + this.velocity.x * 1000.0 * delta,
-      y: this.y + this.velocity.y * 1000.0 * delta
-    };
+    let t = Math.min(this._time, 0.8) / 0.8;
 
-    let lg = Math.sqrt(Math.pow(nextPos.x, 2) + Math.pow(nextPos.y, 2));
-
-    if (lg >= game.arena.radius - this.radius) {
-      nextPos.x = (nextPos.x / lg) * (game.arena.radius - this.radius);
-      nextPos.y = (nextPos.y / lg) * (game.arena.radius - this.radius);
-      this.ttl = 0;
-    }
-
-    this.x = nextPos.x;
-    this.y = nextPos.y;
-
-    for (let entity of game.entities) {
-      if (entity != this && entity.shootable && entity.ID != this.shooter_id) {
-        let dist = Math.sqrt(
-          Math.pow(entity.x - this.x, 2) + Math.pow(entity.y - this.y, 2)
-        );
-
-        if (dist < this.radius + entity.radius) {
-          this.ttl = 0;
-
-          if (entity["hit"]) {
-            entity["hit"](this.hitPower);
-          }
-        }
-      }
-    }
+    this.speed = 1000 * (t * t);
+    this._time += delta;
   }
 };

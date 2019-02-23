@@ -1,5 +1,4 @@
 const Player = require("./Player");
-const Rocket = require("./weapons/projectiles/Rocket");
 
 module.exports = class Client {
   constructor(game, io, socket) {
@@ -50,28 +49,7 @@ module.exports = class Client {
 
   update(delta) {
     if (this.player) {
-      if (this.player.alive) {
-        if (this.player.weapon && this.player.weapon.fire) {
-          let projectiles = this.player.weapon.projectiles();
-
-          if (projectiles != null) {
-            projectiles.forEach(projectile => {
-              projectile.shooter_id = this.player.ID;
-              projectile.x =
-                this.player.x +
-                this.player.pointing.x * this.player.radius +
-                projectile.radius;
-              projectile.y =
-                this.player.y +
-                this.player.pointing.y * this.player.radius +
-                projectile.radius;
-              projectile.direction.x = this.player.pointing.x;
-              projectile.direction.y = this.player.pointing.y;
-              this.game.addEntity(projectile);
-            });
-          }
-        }
-      } else if (this.respawnTimer > 0) {
+      if (!this.player.alive && this.respawnTimer > 0) {
         this.respawnTimer -= delta;
 
         if (this.respawnTimer <= 0) {
@@ -96,6 +74,7 @@ module.exports = class Client {
     this.player = new Player(name);
     this.socket.emit("your-player", this.player);
     this.game.addEntity(this.player);
+    this.game.updateTop();
     console.log("%s joined", name);
   }
 

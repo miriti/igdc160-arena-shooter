@@ -6,7 +6,8 @@ export default class Heal extends Entity {
   constructor(data) {
     super(data);
 
-    let border = 4;
+    let border = 6;
+    let strikeWidth = 8;
 
     let image = new PIXI.Graphics();
     image.beginFill(0xfdffffc);
@@ -15,16 +16,16 @@ export default class Heal extends Entity {
 
     image.beginFill(0xf06534);
     image.drawRect(
-      -5,
+      -(strikeWidth / 2),
       -(this.radius - border),
-      10,
+      strikeWidth,
       this.radius * 2 - border * 2
     );
     image.drawRect(
       -(this.radius - border),
-      -5,
+      -(strikeWidth / 2),
       this.radius * 2 - border * 2,
-      10
+      strikeWidth
     );
     image.endFill();
 

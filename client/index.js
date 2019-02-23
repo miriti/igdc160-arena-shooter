@@ -11,6 +11,7 @@ window.$ = window.jQuery = $;
 import "bootstrap";
 
 import "bootstrap/dist/css/bootstrap.css";
+import Top from "./game/ui/Top";
 
 let io = socket();
 
@@ -46,12 +47,20 @@ app.stage.addChild(gameContainer);
 let chatWindow = new Chat(io);
 app.stage.addChild(chatWindow);
 
+let top = new Top(io);
+app.stage.addChild(top);
+
 let resize = () => {
   app.renderer.resize(window.innerWidth, window.innerHeight);
+
   gameContainer.x = window.innerWidth / 2;
   gameContainer.y = window.innerHeight / 2;
+
   chatWindow.x = 10;
   chatWindow.y = window.innerHeight - 60;
+
+  top.x = window.innerWidth - top.width - 10;
+  top.y = 10;
 };
 
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;

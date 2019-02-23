@@ -5,9 +5,9 @@
   "main": "index.js",
   "scripts": {
     "build": "webpack",
-    "start": "pm2 start process.json && pm2 logs",
+    "start": "webpack && pm2 start process.json && pm2 logs",
     "stop": "pm2 kill",
-    "dev": "pm2 start process.dev.json",
+    "dev": "pm2 start process.dev.json && pm2 logs",
     "stop-dev": "pm2 kill"
   },
   "keywords": [

@@ -1,16 +1,16 @@
 import * as PIXI from "pixi.js";
+import UpdatableObject from "./UpdatableObject";
 
-export default class Entity extends PIXI.Container {
+export default class Entity extends UpdatableObject {
   constructor(data) {
     super();
 
     this.velocity = new PIXI.Point();
     this.pointing = new PIXI.Point();
+    this.direction = new PIXI.Point();
 
     this.data = data;
   }
-
-  update(delta) {}
 
   set data(newData) {
     this.x = newData.x;

@@ -5,6 +5,7 @@ import Rocket from "./Rocket";
 import Heal from "./Heal";
 import Bullet from "./projectiles/Bullet";
 import UpdatableObject from "./UpdatableObject";
+import Pickup from "./Pickup";
 export default class Game extends UpdatableObject {
   constructor(io) {
     super();
@@ -110,6 +111,8 @@ export default class Game extends UpdatableObject {
         return new Heal(data);
       case "Bullet":
         return new Bullet(data);
+      case "Pickup":
+        return new Pickup(data);
       default:
         return new Entity(data);
     }

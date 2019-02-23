@@ -6,7 +6,7 @@ module.exports = class RocketLauncher extends Weapon {
   constructor() {
     super();
     this.name = "Rocket Launcher";
-    this.recoilTime = 0.3;
+    this.recoilTime = 1.5;
   }
 
   projectileFactory() {

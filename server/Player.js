@@ -1,6 +1,6 @@
 const GameEntity = require("./GameEntity");
-const RocketLauncher = require("./weapons/RocketLauncher");
 const MachineGun = require("./weapons/MachineGun");
+
 module.exports = class Player extends GameEntity {
   constructor(name) {
     super();
@@ -10,8 +10,9 @@ module.exports = class Player extends GameEntity {
     this.radius = 20;
     this.maxHealth = 100;
     this.health = 100;
-    // this.weapon = new RocketLauncher();
     this.weapon = new MachineGun();
+    this.frags = 0;
+    this.deaths = 0;
 
     this.respawn();
   }
@@ -38,6 +39,34 @@ module.exports = class Player extends GameEntity {
     if (this.alive) {
       this.weapon.update(delta);
 
+      if (this.weapon.fire) {
+        let projectiles = this.weapon.projectiles();
+
+        if (projectiles != null) {
+          projectiles.forEach(projectile => {
+            let spread = this.weapon.spread;
+            let angle =
+              Math.atan2(this.pointing.y, this.pointing.x) +
+              -spread / 2 +
+              Math.random() * spread;
+
+            let vector = {
+              x: Math.cos(angle),
+              y: Math.sin(angle)
+            };
+            projectile.shooter_id = this.ID;
+            projectile.pointing = vector;
+            projectile.x =
+              this.x + vector.x * (this.radius + projectile.radius);
+            projectile.y =
+              this.y + vector.y * (this.radius + projectile.radius);
+            projectile.direction.x = vector.x;
+            projectile.direction.y = vector.y;
+            game.addEntity(projectile);
+          });
+        }
+      }
+
       let nextPos = {
         x: this.x + this.velocity.x * 400.0 * delta,
         y: this.y + this.velocity.y * 400.0 * delta
@@ -56,7 +85,12 @@ module.exports = class Player extends GameEntity {
       let collisions = this.getCollisions(game);
 
       for (let entity of collisions) {
-        if (this.health < this.maxHealth && entity["type"] == "Heal") {
+        if (entity.type == "Pickup") {
+          let fireState = this.weapon.fire;
+          this.weapon = entity.carries;
+          this.weapon.fire = fireState;
+          entity.remove();
+        } else if (this.health < this.maxHealth && entity["type"] == "Heal") {
           this.health = this.maxHealth;
           entity.remove();
         }
@@ -68,6 +102,7 @@ module.exports = class Player extends GameEntity {
     this.health -= amount;
 
     if (this.health <= 0) {
+      this.deaths++;
       this.health = 0;
     }
   }

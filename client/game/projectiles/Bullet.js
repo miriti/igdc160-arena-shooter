@@ -5,6 +5,8 @@ export default class Bullet extends Entity {
   constructor(data) {
     super(data);
 
+    new Audio("/audio/machinegun-shot.ogg").play();
+
     let image = new PIXI.Graphics();
     image.beginFill(0xfdffffc);
     image.drawCircle(0, 0, this.radius);
