@@ -36,13 +36,13 @@ module.exports = class Game {
     if (sec != this._sec) {
       this._sec = sec;
 
-      if (sec % 10) {
+      if (sec % 35) {
         if (this.entities.filter(e => e.type == "Heal").length == 0) {
           this.spawn(Heal);
         }
       }
 
-      if (sec % 10 == 0) {
+      if (sec % 20 == 0) {
         if (this.entities.filter(e => e.type == "Pickup").length <= 2) {
           this.spawn(Pickup);
         }
@@ -68,12 +68,6 @@ module.exports = class Game {
     }
 
     this.second = Math.round(this.time);
-
-    if (Math.round(this.time) % 20 == 0) {
-      if (this.entities.filter(e => e.type == "Heal").length == 0) {
-        // this.spawn(Heal);
-      }
-    }
 
     this.io.emit("situation", {
       time: this.time,

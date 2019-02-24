@@ -1,6 +1,5 @@
 const Weapon = require("./Weapon");
 const Rocket = require("./projectiles/Rocket");
-const Bullet = require("./projectiles/Bullet");
 
 module.exports = class RocketLauncher extends Weapon {
   constructor() {
@@ -10,6 +9,6 @@ module.exports = class RocketLauncher extends Weapon {
   }
 
   projectileFactory() {
-    return new Rocket();
+    return new Rocket(this.target);
   }
 };

@@ -9,6 +9,7 @@ module.exports = class Weapon {
     this.spreadMin = 0;
     this.spreadMax = 0;
     this.spreadTime = 0;
+    this.target = { x: 0, y: 0 };
   }
 
   get spread() {
@@ -23,8 +24,10 @@ module.exports = class Weapon {
     );
   }
 
-  pull() {
+  pull(target) {
     this.fire = true;
+    this.target.x = target.x;
+    this.target.y = target.y;
   }
 
   release() {

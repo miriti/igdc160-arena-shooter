@@ -6,11 +6,17 @@ export default class Player extends Entity {
   constructor(data) {
     super(data);
 
+    this.sprite = new PIXI.Sprite.from("/assets/player.png");
+    this.sprite.anchor.set(0.5, 0.5);
+    this.addChild(this.sprite);
+
+    /** 
     let circle = new PIXI.Graphics();
     circle.beginFill(0xf5ee9e);
     circle.drawCircle(0, 0, 20);
     circle.endFill();
     this.addChild(circle);
+    */
 
     this.gun = new PIXI.Graphics();
     this.gun.beginFill(0x246eb9);
@@ -43,6 +49,14 @@ export default class Player extends Entity {
 
     if (this.healthBar) {
       this.healthBar.value = newData["health"];
+    }
+
+    if (this.sprite) {
+      if (newData["direction"].x < 0) {
+        this.sprite.scale.set(-1, 1);
+      } else if (newData["direction"].x > 0) {
+        this.sprite.scale.set(1, 1);
+      }
     }
 
     if (this.health <= 0) {

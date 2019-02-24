@@ -15,6 +15,8 @@ module.exports = class GameEntity {
     this.ttl = null;
     this.shootable = true;
     this.collision = true;
+    this.maxDistance = null;
+    this.totalTravel = 0;
   }
 
   getVelocity() {
@@ -24,7 +26,7 @@ module.exports = class GameEntity {
     };
   }
 
-  getCollisions(game, resolve) {
+  getCollisions(game) {
     let collisions = [];
     for (let entity of game.entities.filter(e => e != this && e.collision)) {
       let dist = Math.sqrt(
@@ -38,22 +40,87 @@ module.exports = class GameEntity {
     return collisions;
   }
 
-  move(delta, game) {
-    let nextPos = {
-      x: this.x + this.getVelocity().x * delta,
-      y: this.y + this.getVelocity().y * delta
-    };
+  onArenaCollision() {}
 
-    let lg = Math.sqrt(Math.pow(nextPos.x, 2) + Math.pow(nextPos.y, 2));
+  onMaxDistance(game) {
+    this.remove();
+  }
 
-    if (lg >= game.arena.radius - this.radius) {
-      nextPos.x = (nextPos.x / lg) * (game.arena.radius - this.radius);
-      nextPos.y = (nextPos.y / lg) * (game.arena.radius - this.radius);
-      this.ttl = 0;
+  move(delta, game, onCollision) {
+    let velocity = this.getVelocity();
+
+    if (velocity.x != 0 || velocity.y != 0) {
+      let originalPos = {
+        x: this.x,
+        y: this.y
+      };
+
+      let targetPos = {
+        x: this.x + velocity.x * delta,
+        y: this.y + velocity.y * delta
+      };
+
+      let leapTravel = Math.sqrt(
+        Math.pow(targetPos.x - this.x, 2) + Math.pow(targetPos.y - this.y, 2)
+      );
+
+      let vector = {
+        x: (targetPos.x - originalPos.x) / leapTravel,
+        y: (targetPos.y - originalPos.y) / leapTravel
+      };
+
+      if (leapTravel != 0 && leapTravel > this.radius) {
+        let interTravel = 0;
+
+        do {
+          this.x = originalPos.x + vector.x * interTravel;
+          this.y = originalPos.y + vector.y * interTravel;
+
+          if (onCollision) {
+            let collisions = this.getCollisions(game);
+
+            if (collisions.length > 0) {
+              if (onCollision(collisions)) {
+                break;
+              }
+            }
+          }
+
+          interTravel = Math.min(interTravel + this.radius, leapTravel);
+        } while (interTravel < leapTravel);
+      } else {
+        this.x = targetPos.x;
+        this.y = targetPos.y;
+
+        if (onCollision) {
+          let collisions = this.getCollisions(game);
+
+          if (collisions.length > 0) {
+            if (onCollision(collisions)) {
+            }
+          }
+        }
+      }
+
+      let lg = Math.sqrt(Math.pow(targetPos.x, 2) + Math.pow(targetPos.y, 2));
+
+      if (lg >= game.arena.radius - this.radius) {
+        this.x = (targetPos.x / lg) * (game.arena.radius - this.radius);
+        this.y = (targetPos.y / lg) * (game.arena.radius - this.radius);
+        this.onArenaCollision();
+      }
+
+      if (this.maxDistance != null && this.origin) {
+        let total = Math.sqrt(
+          Math.pow(this.x - this.origin.x, 2) +
+            Math.pow(this.y - this.origin.y, 2)
+        );
+
+        if (total >= this.maxDistance) {
+          this.onMaxDistance(game);
+        }
+      }
     }
-
-    this.x = nextPos.x;
-    this.y = nextPos.y;
   }
 
   update(delta, game) {

@@ -10,10 +10,20 @@ module.exports = class Client {
 
     this.socket.on("join", this.join.bind(this));
     this.socket.on("disconnect", this.disconnect.bind(this));
-    this.socket.on("velocity", value => {
+    this.socket.on("direction", direction => {
       if (this.player && this.player.alive) {
-        if (value.hasOwnProperty("x")) this.player.velocity.x = value.x;
-        if (value.hasOwnProperty("y")) this.player.velocity.y = value.y;
+        let ln = Math.sqrt(Math.pow(direction.x, 2) + Math.pow(direction.y, 2));
+
+        if (ln > 0) {
+          direction.x /= ln;
+          direction.y /= ln;
+        }
+
+        this.player._oldDirection.x = this.player.direction.x;
+        this.player._oldDirection.y = this.player.direction.y;
+
+        this.player.direction.x = direction.x;
+        this.player.direction.y = direction.y;
 
         this.io.emit("update-entity", this.player);
       }
@@ -21,16 +31,23 @@ module.exports = class Client {
 
     this.socket.on("pointing", value => {
       if (this.player && this.player.alive) {
-        this.player.pointing.x = value.x;
-        this.player.pointing.y = value.y;
+        let ln = Math.sqrt(Math.pow(value.x, 2) + Math.pow(value.y, 2));
+        this.player.pointing.x = value.x / ln;
+        this.player.pointing.y = value.y / ln;
+
+        this.player.weapon.target.x = this.player.x + value.x;
+        this.player.weapon.target.y = this.player.y + value.y;
 
         this.io.emit("update-entity", this.player);
       }
     });
 
-    this.socket.on("fire-on", () => {
+    this.socket.on("fire-on", target => {
       if (this.player && this.player.alive && this.player.weapon != null) {
-        this.player.weapon.pull();
+        this.player.weapon.pull({
+          x: this.player.x + target.x,
+          y: this.player.y + target.y
+        });
       }
     });
 
@@ -82,6 +99,7 @@ module.exports = class Client {
     if (this.player) {
       this.io.emit("left", this.player.name);
       this.game.removeEntity(this.player);
+      this.game.updateTop();
 
       console.log("%s disconnected", this.player.name);
     }

@@ -32,7 +32,10 @@ app.view.addEventListener("mousemove", event => {
 });
 
 app.view.addEventListener("mousedown", event => {
-  game.mouseDown();
+  game.mouseDown(
+    event.clientX - window.innerWidth / 2,
+    event.clientY - window.innerHeight / 2
+  );
 });
 
 app.view.addEventListener("mouseup", event => {

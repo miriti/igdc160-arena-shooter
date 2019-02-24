@@ -1,5 +1,6 @@
 const GameEntity = require("./GameEntity");
 const MachineGun = require("./weapons/MachineGun");
+const RocketLauncher = require("./weapons/RocketLauncher");
 
 module.exports = class Player extends GameEntity {
   constructor(name) {
@@ -10,9 +11,15 @@ module.exports = class Player extends GameEntity {
     this.radius = 20;
     this.maxHealth = 100;
     this.health = 100;
-    this.weapon = new MachineGun();
+    // this.weapon = new MachineGun();
+    this.weapon = new RocketLauncher();
     this.frags = 0;
     this.deaths = 0;
+    this.speed = 400;
+
+    this._oldDirection = { x: 0, y: 0 };
+    this._accelerationTime = 0.5;
+    this._movingTime = 0;
 
     this.respawn();
   }
@@ -28,6 +35,23 @@ module.exports = class Player extends GameEntity {
 
     this.weapon.reset();
   }
+
+  /*
+  getVelocity() {
+    let direction;
+
+    if (this.direction.x != 0 || this.direction.y != 0) {
+      direction = this.direction;
+    } else {
+      direction = this._oldDirection;
+    }
+
+    return {
+      x: direction.x * this.speed,
+      y: direction.y * this.speed
+    };
+  }
+  */
 
   get alive() {
     return this.health > 0;
@@ -56,10 +80,11 @@ module.exports = class Player extends GameEntity {
             };
             projectile.shooter_id = this.ID;
             projectile.pointing = vector;
-            projectile.x =
+            projectile.x = projectile.origin.x =
               this.x + vector.x * (this.radius + projectile.radius);
-            projectile.y =
+            projectile.y = projectile.origin.y =
               this.y + vector.y * (this.radius + projectile.radius);
+
             projectile.direction.x = vector.x;
             projectile.direction.y = vector.y;
             game.addEntity(projectile);
@@ -67,20 +92,22 @@ module.exports = class Player extends GameEntity {
         }
       }
 
-      let nextPos = {
-        x: this.x + this.velocity.x * 400.0 * delta,
-        y: this.y + this.velocity.y * 400.0 * delta
-      };
-
-      let lg = Math.sqrt(Math.pow(nextPos.x, 2) + Math.pow(nextPos.y, 2));
-
-      if (lg >= game.arena.radius - this.radius) {
-        nextPos.x = (nextPos.x / lg) * (game.arena.radius - this.radius);
-        nextPos.y = (nextPos.y / lg) * (game.arena.radius - this.radius);
+      /*
+      if (this.direction.x != 0 || this.direction.y != 0) {
+        this._movingTime = Math.min(
+          this._movingTime + delta,
+          this._accelerationTime
+        );
+      } else {
+        this._movingTime = Math.max(this._movingTime - delta, 0);
       }
 
-      this.x = nextPos.x;
-      this.y = nextPos.y;
+      let t = this._movingTime / this._accelerationTime;
+
+      this.speed = 500 * t;
+      */
+
+      this.move(delta, game);
 
       let collisions = this.getCollisions(game);
 

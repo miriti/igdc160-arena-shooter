@@ -6,6 +6,7 @@ import Heal from "./Heal";
 import Bullet from "./projectiles/Bullet";
 import UpdatableObject from "./UpdatableObject";
 import Pickup from "./Pickup";
+import Explosion from "./fx/Explosion";
 export default class Game extends UpdatableObject {
   constructor(io) {
     super();
@@ -89,6 +90,7 @@ export default class Game extends UpdatableObject {
   removeEntity(data) {
     if (this.entities.has(data["ID"])) {
       let entity = this.entities.get(data["ID"]);
+      entity.data = data;
       this.actionLayer.removeChild(entity);
       this.entities.delete(data["ID"]);
     }
@@ -113,80 +115,47 @@ export default class Game extends UpdatableObject {
         return new Bullet(data);
       case "Pickup":
         return new Pickup(data);
+      case "Explosion":
+        return new Explosion(data);
       default:
         return new Entity(data);
     }
   }
 
+  updateDirection() {
+    let direction = {
+      x:
+        (this.keys.has(37) || this.keys.has(65) ? -1 : 0) +
+        (this.keys.has(39) || this.keys.has(68) ? 1 : 0),
+      y:
+        (this.keys.has(38) || this.keys.has(87) ? -1 : 0) +
+        (this.keys.has(40) || this.keys.has(83) ? 1 : 0)
+    };
+
+    this.io.emit("direction", direction);
+  }
+
   keyDown(key) {
-    if (!this.keys.has(key)) {
-      this.keys.set(key, Date.now());
-
-      if (this.player) {
-        switch (key) {
-          // left
-          case 37:
-          case 65:
-            this.io.emit("velocity", { x: -1 });
-            break;
-
-          // up
-          case 38:
-          case 87:
-            this.io.emit("velocity", { y: -1 });
-            break;
-
-          // right
-          case 39:
-          case 68:
-            this.io.emit("velocity", { x: 1 });
-            break;
-
-          // down
-          case 40:
-          case 83:
-            this.io.emit("velocity", { y: 1 });
-            break;
-        }
+    if ([37, 39, 38, 40, 65, 68, 87, 83].indexOf(key) != -1) {
+      if (!this.keys.has(key)) {
+        this.keys.set(key, Date.now());
+        this.updateDirection();
       }
     }
   }
 
   keyUp(key) {
-    if (this.player) {
-      switch (key) {
-        // left
-        case 37:
-        case 65:
-          this.io.emit("velocity", { x: 0 });
-          break;
-
-        // up
-        case 38:
-        case 87:
-          this.io.emit("velocity", { y: 0 });
-          break;
-
-        // right
-        case 39:
-        case 68:
-          this.io.emit("velocity", { x: 0 });
-          break;
-
-        // down
-        case 40:
-        case 83:
-          this.io.emit("velocity", { y: 0 });
-          break;
+    if ([37, 39, 38, 40, 65, 68, 87, 83].indexOf(key) != -1) {
+      if (this.keys.has(key)) {
+        this.keys.delete(key);
+        this.updateDirection();
       }
     }
-    this.keys.delete(key);
   }
 
   mouseMove(dx, dy) {
     if (this.player) {
-      let l = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
-      let pointing = { x: dx / l, y: dy / l };
+      let pointing = { x: dx, y: dy };
 
       if (
         this.player.pointing.x != pointing.x ||
@@ -197,9 +166,9 @@ export default class Game extends UpdatableObject {
     }
   }
 
-  mouseDown() {
+  mouseDown(x, y) {
     if (this.player) {
-      this.io.emit("fire-on");
+      this.io.emit("fire-on", { x, y });
     }
   }
 
