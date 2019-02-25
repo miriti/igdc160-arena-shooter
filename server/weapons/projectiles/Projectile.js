@@ -9,7 +9,11 @@ module.exports = class Projectile extends GameEntity {
     this.origin = { x: 0, y: 0 };
   }
 
-  onArenaCollision() {
+  onArenaCollision(game) {
+    this.remove();
+  }
+
+  onEntityCollision(game) {
     this.remove();
   }
 
@@ -30,7 +34,7 @@ module.exports = class Projectile extends GameEntity {
           }
         }
 
-        this.remove();
+        this.onEntityCollision(game);
 
         return true;
       }

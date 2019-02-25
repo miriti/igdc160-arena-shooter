@@ -13,7 +13,7 @@ export default class Pickup extends Entity {
 
     this.title = new PIXI.Text(data["carries"]["name"], {
       fontFamily: "Arial",
-      fill: 0xffffff,
+      fill: 0x246eb9,
       fontSize: 14,
       align: "center"
     });

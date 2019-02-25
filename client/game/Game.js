@@ -24,7 +24,7 @@ export default class Game extends UpdatableObject {
 
     io.on("arena", arena => {
       let arenaFloor = new PIXI.Graphics();
-      arenaFloor.beginFill(0xf06543);
+      arenaFloor.beginFill(0xf5ee9e);
       arenaFloor.drawCircle(0, 0, arena["radius"]);
       arenaFloor.endFill();
       this.arenaLayer.addChild(arenaFloor);

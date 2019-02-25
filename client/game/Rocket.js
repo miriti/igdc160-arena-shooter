@@ -45,8 +45,8 @@ export default class Rocket extends Entity {
     new Audio("/audio/rocket.ogg").play();
 
     let rocket = new PIXI.Graphics();
-    rocket.beginFill(0xf5ee9e);
-    rocket.drawRoundedRect(-10, -this.radius / 2, 20, this.radius, 4);
+    rocket.beginFill(0xf06543);
+    rocket.drawRect(-10, -this.radius / 2, 20, this.radius);
     rocket.beginFill(0x246eb9);
     rocket.drawCircle(0, 0, this.radius);
     rocket.endFill();

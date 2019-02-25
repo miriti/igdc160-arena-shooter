@@ -7,6 +7,7 @@ module.exports = class Explosion extends GameEntity {
     this.type = "Explosion";
     this.radius = 0;
     this.hitPower = 75;
+    this.shooter_id = null;
 
     this._explosionRadius = 150;
     this._explosionTime = 0;
@@ -20,9 +21,8 @@ module.exports = class Explosion extends GameEntity {
     if (this._explosionTime >= this._totalExplosionTime) {
       this.remove();
     } else {
-      this.radius =
-        this._explosionRadius *
-        (this._explosionTime / this._totalExplosionTime);
+      let t = this._explosionTime / this._totalExplosionTime;
+      this.radius = this._explosionRadius * (t * t);
 
       this._explosionTime += delta;
 
@@ -33,6 +33,13 @@ module.exports = class Explosion extends GameEntity {
       for (let entity of collisions) {
         if (entity.type == "Player" && entity.alive) {
           entity.hit(this.hitPower);
+          if (!entity.alive) {
+            let shooter = game.getEntityByID(this.shooter_id);
+            if (shooter != null) {
+              shooter.frags++;
+            }
+            game.updateTop();
+          }
           this._hit.push(entity);
         }
       }

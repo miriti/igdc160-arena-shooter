@@ -7,6 +7,6 @@ module.exports = class Bullet extends Projectile {
     this.type = "Bullet";
     this.radius = 2;
     this.speed = 5000;
-    this.hitPower = 5;
+    this.hitPower = 15;
   }
 };

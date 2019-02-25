@@ -1,5 +1,5 @@
 const GameEntity = require("./GameEntity");
-const MachineGun = require("./weapons/MachineGun");
+const Pistol = require("./weapons/Pistol");
 const RocketLauncher = require("./weapons/RocketLauncher");
 
 module.exports = class Player extends GameEntity {
@@ -11,8 +11,7 @@ module.exports = class Player extends GameEntity {
     this.radius = 20;
     this.maxHealth = 100;
     this.health = 100;
-    // this.weapon = new MachineGun();
-    this.weapon = new RocketLauncher();
+    this.weapon = new Pistol();
     this.frags = 0;
     this.deaths = 0;
     this.speed = 400;
@@ -35,23 +34,6 @@ module.exports = class Player extends GameEntity {
 
     this.weapon.reset();
   }
-
-  /*
-  getVelocity() {
-    let direction;
-
-    if (this.direction.x != 0 || this.direction.y != 0) {
-      direction = this.direction;
-    } else {
-      direction = this._oldDirection;
-    }
-
-    return {
-      x: direction.x * this.speed,
-      y: direction.y * this.speed
-    };
-  }
-  */
 
   get alive() {
     return this.health > 0;
@@ -91,21 +73,6 @@ module.exports = class Player extends GameEntity {
           });
         }
       }
-
-      /*
-      if (this.direction.x != 0 || this.direction.y != 0) {
-        this._movingTime = Math.min(
-          this._movingTime + delta,
-          this._accelerationTime
-        );
-      } else {
-        this._movingTime = Math.max(this._movingTime - delta, 0);
-      }
-
-      let t = this._movingTime / this._accelerationTime;
-
-      this.speed = 500 * t;
-      */
 
       this.move(delta, game);
 

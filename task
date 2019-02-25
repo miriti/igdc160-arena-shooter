@@ -1,2 +1,2 @@
 #!/bin/bash
-task project:ArenaShooter $@
+clear ; task project:ArenaShooter $@

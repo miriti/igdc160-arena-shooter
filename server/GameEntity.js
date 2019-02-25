@@ -40,7 +40,7 @@ module.exports = class GameEntity {
     return collisions;
   }
 
-  onArenaCollision() {}
+  onArenaCollision(game) {}
 
   onMaxDistance(game) {
     this.remove();
@@ -107,7 +107,7 @@ module.exports = class GameEntity {
       if (lg >= game.arena.radius - this.radius) {
         this.x = (targetPos.x / lg) * (game.arena.radius - this.radius);
         this.y = (targetPos.y / lg) * (game.arena.radius - this.radius);
-        this.onArenaCollision();
+        this.onArenaCollision(game);
       }
 
       if (this.maxDistance != null && this.origin) {

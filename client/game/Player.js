@@ -10,14 +10,6 @@ export default class Player extends Entity {
     this.sprite.anchor.set(0.5, 0.5);
     this.addChild(this.sprite);
 
-    /** 
-    let circle = new PIXI.Graphics();
-    circle.beginFill(0xf5ee9e);
-    circle.drawCircle(0, 0, 20);
-    circle.endFill();
-    this.addChild(circle);
-    */
-
     this.gun = new PIXI.Graphics();
     this.gun.beginFill(0x246eb9);
     this.gun.drawRect(0, -5, 20, 10);
@@ -31,7 +23,7 @@ export default class Player extends Entity {
 
     this.nameLabel = new PIXI.Text(data["name"], {
       fontFamily: "Arial",
-      fill: 0xffffff,
+      fill: 0x246eb9,
       fontSize: 14,
       align: "center"
     });

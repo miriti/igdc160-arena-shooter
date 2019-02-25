@@ -8,7 +8,7 @@ export default class Bullet extends Entity {
     new Audio("/audio/machinegun-shot.ogg").play();
 
     let image = new PIXI.Graphics();
-    image.beginFill(0xfdffffc);
+    image.beginFill(0x246eb9);
     image.drawCircle(0, 0, this.radius);
     image.endFill();
 
