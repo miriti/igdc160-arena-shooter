@@ -1,2 +1,0 @@
-#!/bin/bash
-task add project:ArenaShooter due:2019-02-28 $@
