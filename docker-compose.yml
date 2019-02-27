@@ -2,10 +2,6 @@ version: "3"
 
 services:
   game:
-    image: "node:11-slim"
-    working_dir: /home/node/app
-    volumes:
-      - ./:/home/node/app
+    build: .
     ports:
       - "8080:8080"
-    command: "npm start"
