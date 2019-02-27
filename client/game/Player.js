@@ -1,6 +1,7 @@
 import Entity from "./Entity";
 import * as PIXI from "pixi.js";
 import HealthBar from "./ui/HealthBar";
+import BloodSpill from "./fx/BloodSpill";
 
 export default class Player extends Entity {
   constructor(data) {
@@ -32,6 +33,8 @@ export default class Player extends Entity {
     this.addChild(this.nameLabel);
 
     this.fire = false;
+
+    this._dead = false;
   }
 
   set data(newData) {
@@ -52,7 +55,7 @@ export default class Player extends Entity {
     }
 
     if (this.health <= 0) {
-      this.alpha = 0.3;
+      this.alpha = 0;
     } else {
       this.alpha = 1;
     }
@@ -60,5 +63,12 @@ export default class Player extends Entity {
 
   update(delta) {
     this.gun.rotation = Math.atan2(this.pointing.y, this.pointing.x);
+  }
+
+  die() {
+    let bloodSpill = new BloodSpill();
+    bloodSpill.x = this.x;
+    bloodSpill.y = this.y + this.radius;
+    this.parent.addChild(bloodSpill);
   }
 }

@@ -68,6 +68,11 @@ export default class Game extends UpdatableObject {
         this.y = -this.player.y;
       }
     });
+
+    io.on("died", player => {
+      let entity = this.entities.get(player["ID"]);
+      entity.die();
+    });
   }
 
   updateEntity(data) {

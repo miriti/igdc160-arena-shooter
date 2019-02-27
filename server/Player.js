@@ -1,6 +1,6 @@
 const GameEntity = require("./GameEntity");
 const Pistol = require("./weapons/Pistol");
-const RocketLauncher = require("./weapons/RocketLauncher");
+const Pickup = require("./Pickup");
 
 module.exports = class Player extends GameEntity {
   constructor(name) {
@@ -16,6 +16,7 @@ module.exports = class Player extends GameEntity {
     this.deaths = 0;
     this.speed = 400;
 
+    this._dead = false;
     this._oldDirection = { x: 0, y: 0 };
     this._accelerationTime = 0.5;
     this._movingTime = 0;
@@ -24,10 +25,14 @@ module.exports = class Player extends GameEntity {
   }
 
   respawn() {
+    this._dead = false;
     this.health = this.maxHealth;
 
     this.velocity.x = 0;
     this.velocity.y = 0;
+
+    this.direction.x = 0;
+    this.direction.y = 0;
 
     this.x = -(500 / 2) + Math.random() * 500;
     this.y = -(500 / 2) + Math.random() * 500;
@@ -41,6 +46,19 @@ module.exports = class Player extends GameEntity {
 
   update(delta, game) {
     super.update(delta, game);
+
+    if (this.health <= 0 && !this._dead) {
+      this._dead = true;
+
+      game.io.emit("died", this);
+
+      if (game.entities.filter(e => e.type == "Pickup").length <= 5) {
+        let weaponPickup = new Pickup(this.weapon.constructor);
+        weaponPickup.x = this.x;
+        weaponPickup.y = this.y + this.radius;
+        game.addEntity(weaponPickup);
+      }
+    }
 
     if (this.alive) {
       this.weapon.update(delta);
