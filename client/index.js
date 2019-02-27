@@ -1,28 +1,23 @@
 import * as PIXI from "pixi.js";
-
 import socket from "socket.io-client";
+import $ from "jquery";
+window.$ = window.jQuery = $;
+import "bootstrap";
+import "bootstrap/dist/css/bootstrap.css";
+
 import Game from "./game/Game";
 import Chat from "./game/ui/Chat";
-
-import $ from "jquery";
-
-window.$ = window.jQuery = $;
-
-import "bootstrap";
-
-import "bootstrap/dist/css/bootstrap.css";
 import Top from "./game/ui/Top";
 
 let io = socket();
 
-let app = new PIXI.Application();
+PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 
+let app = new PIXI.Application();
 app.renderer.autoResize = true;
 app.renderer.view.style.position = "absolute";
 app.renderer.view.style.display = "block";
 app.renderer.autoResize = true;
-
-let game = new Game(io);
 
 app.view.addEventListener("mousemove", event => {
   game.mouseMove(
@@ -41,6 +36,8 @@ app.view.addEventListener("mousedown", event => {
 app.view.addEventListener("mouseup", event => {
   game.mouseUp();
 });
+
+let game = new Game(io);
 
 let gameContainer = new PIXI.Container();
 gameContainer.addChild(game);
@@ -66,8 +63,6 @@ let resize = () => {
   top.y = 10;
 };
 
-PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
-
 window.addEventListener("resize", resize);
 
 resize();
@@ -81,6 +76,7 @@ function gameLoop() {
   lastTime = currentTime;
   requestAnimationFrame(gameLoop);
 }
+
 gameLoop();
 
 document.body.appendChild(app.view);
