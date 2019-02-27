@@ -1,2 +1,2 @@
 #!/bin/bash
-task add project:ArenaShooter due:2019-02-27 $@
+task add project:ArenaShooter due:2019-02-28 $@
